@@ -18,3 +18,5 @@
     - краткого содержания
     - цитат
     - общего вердикта
+      
+![image](https://github.com/user-attachments/assets/7c1d3856-e854-48f1-8321-c13e68b691ed)
