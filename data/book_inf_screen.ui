@@ -51,13 +51,13 @@
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>20</y>
+      <y>10</y>
       <width>229</width>
       <height>90</height>
      </rect>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt; font-weight:600;&quot;&gt;TextLabel&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;&lt;br/&gt;TextLabel&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QWidget" name="verticalLayoutWidget_2">
@@ -73,21 +73,21 @@
      <item>
       <widget class="QPushButton" name="book_review">
        <property name="text">
-        <string>PushButton</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="book_quotes">
-       <property name="text">
-        <string>PushButton</string>
+        <string>Рецензия</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="book_retelling">
        <property name="text">
-        <string>PushButton</string>
+        <string>Краткое содержание</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="book_quotes">
+       <property name="text">
+        <string>Цитаты</string>
        </property>
       </widget>
      </item>
@@ -96,14 +96,14 @@
    <widget class="QPushButton" name="back_button">
     <property name="geometry">
      <rect>
-      <x>670</x>
+      <x>612</x>
       <y>520</y>
-      <width>93</width>
+      <width>151</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>На главную</string>
+     <string>НАЗАД</string>
     </property>
    </widget>
   </widget>
