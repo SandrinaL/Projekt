@@ -64,11 +64,9 @@ class MainWindow(QMainWindow):
             '{self.book_add_screen.title.toPlainText()}', '{self.book_add_screen.title.toPlainText()}',
             '{self.book_add_screen.title.toPlainText()}', '', '', '')""")
             self.db.commit()
-            print('book was addad')
+            print('book was added')
             self.stacked_widget.setCurrentWidget(self.book_add_screen)
         else:
-            print('dcfgh')
-            print('it works!')
             self.book_add_screen.res_label.setText('Введите навзание книги')
 
 
