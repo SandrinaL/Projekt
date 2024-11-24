@@ -54,9 +54,17 @@ class MainWindow(QMainWindow):
         self.stacked_widget.setCurrentWidget(self.book_notebook_screen)
         text = self.c.execute(f"""SELECT * FROM mylibrary WHERE ID = {id}""")
         for i in text:
-            # не спрашивай что это. Это просто говно-код
             self.book_notebook_screen.notebook.setPlainText(i[6])
+
+        self.book_notebook_screen.back_btn.blockSignals(True)
+        try:
+            self.book_notebook_screen.back_btn.clicked.disconnect()
+        except TypeError:
+            pass
         self.book_notebook_screen.back_btn.clicked.connect(lambda: self.go_back_quotes(id))
+        self.book_notebook_screen.back_btn.blockSignals(False)
+
+        # self.book_notebook_screen.back_btn.clicked.connect(lambda: self.go_back_quotes(id))
 
     
     def go_back_quotes(self, id):
@@ -68,7 +76,15 @@ class MainWindow(QMainWindow):
         text = self.c.execute(f"""SELECT * FROM mylibrary WHERE ID = {id}""")
         for i in text:
             self.book_notebook_screen.notebook.setPlainText(i[5])
+        self.book_notebook_screen.back_btn.blockSignals(True)
+        try:
+            self.book_notebook_screen.back_btn.clicked.disconnect()
+        except TypeError:
+            pass
         self.book_notebook_screen.back_btn.clicked.connect(lambda: self.go_back_retelling(id))
+        self.book_notebook_screen.back_btn.blockSignals(False)
+
+        # self.book_notebook_screen.back_btn.clicked.connect(lambda: self.go_back_quotes(id))
 
     def go_back_retelling(self, id):
         print(type(self.book_notebook_screen.notebook.toPlainText()))
@@ -80,7 +96,15 @@ class MainWindow(QMainWindow):
         text = self.c.execute(f"""SELECT * FROM mylibrary WHERE ID = {id}""")
         for i in text:
             self.book_notebook_screen.notebook.setPlainText(i[7])
+        self.book_notebook_screen.back_btn.blockSignals(True)
+        try:
+            self.book_notebook_screen.back_btn.clicked.disconnect()
+        except TypeError:
+            pass
         self.book_notebook_screen.back_btn.clicked.connect(lambda: self.go_back_review(id))
+        self.book_notebook_screen.back_btn.blockSignals(False)
+
+        # self.book_notebook_screen.back_btn.clicked.connect(lambda: self.go_back_quotes(id))
         
     def go_back_review(self, id):
         print(type(self.book_notebook_screen.notebook.toPlainText()))
@@ -133,7 +157,7 @@ class MainWindow(QMainWindow):
         self.book_add_screen.genre.clear()
         self.book_add_screen.release_year.clear()
         self.stacked_widget.setCurrentWidget(self.book_add_screen)
-# Теперь нужно написать блокнот 
+
     def get_book_info(self, id):
         books = self.c.execute("""SELECT ID, title, release_year, author,
                                genre FROM mylibrary""")
@@ -156,9 +180,22 @@ class MainWindow(QMainWindow):
         self.book_inf_screen.del_book_btn.clicked.connect(lambda: self.del_book(id))
         self.book_inf_screen.del_book_btn.blockSignals(False)
 
+        self.book_inf_screen.book_quotes.blockSignals(True)
+        self.book_inf_screen.book_retelling.blockSignals(True)
+        self.book_inf_screen.book_review.blockSignals(True)
+        try:
+            self.book_inf_screen.book_quotes.clicked.disconnect()
+            self.book_inf_screen.book_retelling.clicked.disconnect()
+            self.book_inf_screen.book_review.clicked.disconnect()
+        except TypeError:
+            pass
+
         self.book_inf_screen.book_quotes.clicked.connect(lambda: self.switch_to_quotes(id))
         self.book_inf_screen.book_retelling.clicked.connect(lambda: self.switch_to_retelling(id))
         self.book_inf_screen.book_review.clicked.connect(lambda: self.switch_to_review(id))
+        self.book_inf_screen.book_quotes.blockSignals(False)
+        self.book_inf_screen.book_retelling.blockSignals(False)
+        self.book_inf_screen.book_review.blockSignals(False)
 
     def add_book(self):
         self.book_add_screen.res_label.clear()
