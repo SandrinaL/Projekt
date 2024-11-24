@@ -96,14 +96,27 @@
    <widget class="QPushButton" name="back_button">
     <property name="geometry">
      <rect>
-      <x>612</x>
+      <x>700</x>
       <y>520</y>
-      <width>151</width>
+      <width>51</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
      <string>НАЗАД</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="del_book_btn">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>520</y>
+      <width>111</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>УДАЛИТЬ КНИГУ</string>
     </property>
    </widget>
   </widget>
