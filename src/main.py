@@ -197,6 +197,8 @@ class MainWindow(QMainWindow):
         self.book_inf_screen.book_retelling.blockSignals(False)
         self.book_inf_screen.book_review.blockSignals(False)
 
+    #   ввод информации о новой книге
+
     def add_book(self):
         self.book_add_screen.res_label.clear()
         if self.book_add_screen.title.toPlainText() != '':
