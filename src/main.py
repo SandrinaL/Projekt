@@ -84,7 +84,7 @@ class MainWindow(QMainWindow):
         self.book_notebook_screen.back_btn.clicked.connect(lambda: self.go_back_retelling(id))
         self.book_notebook_screen.back_btn.blockSignals(False)
 
-    # Обновляю краткий пересказ книги по ID
+    # Обновление краткого пересказа книги по ID
     def go_back_retelling(self, id):
         self.c.execute(f"""UPDATE mylibrary SET brief_retelling = '{self.book_notebook_screen.notebook.toPlainText()}' WHERE ID = {id}""")
         self.db.commit()
@@ -201,7 +201,7 @@ class MainWindow(QMainWindow):
         self.book_inf_screen.book_retelling.blockSignals(False)
         self.book_inf_screen.book_review.blockSignals(False)
 
-    #   ввод информации о новой книге
+    #   Ввод информации о новой книге
 
     def add_book(self):
         self.book_add_screen.res_label.clear()
@@ -211,7 +211,7 @@ class MainWindow(QMainWindow):
             '{self.book_add_screen.release_year.toPlainText()}', '{self.book_add_screen.author.toPlainText()}',
             '{self.book_add_screen.genre.toPlainText()}')""")
             self.db.commit()
-            print('книга была добавлена')
+            print('Книга была добавлена')
             self.stacked_widget.setCurrentWidget(self.book_add_screen)
         else:
             self.book_add_screen.res_label.setText('Введите название книги')
