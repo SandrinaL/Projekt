@@ -11,7 +11,6 @@ class MainWindow(QMainWindow):
         self.db = sqlite3.connect('D:\\Project\\base.sqlite')
         self.c = self.db.cursor()
         self.setFixedSize(800, 600)
-        # loadUi('D:\Project\data\\all_books.ui', self)
         
 
         self.stacked_widget = QStackedWidget()
@@ -64,12 +63,13 @@ class MainWindow(QMainWindow):
         self.book_notebook_screen.back_btn.clicked.connect(lambda: self.go_back_quotes(id))
         self.book_notebook_screen.back_btn.blockSignals(False)
 
-        # self.book_notebook_screen.back_btn.clicked.connect(lambda: self.go_back_quotes(id))
 
-    
+  
     def go_back_quotes(self, id):
         self.c.execute(f"""UPDATE mylibrary SET quotes = '{self.book_notebook_screen.notebook.toPlainText()}' WHERE ID = {id}""")
         self.db.commit()
+        self.switch_to_inf_screen()
+
 
     def switch_to_retelling(self, id):
         self.stacked_widget.setCurrentWidget(self.book_notebook_screen)
@@ -84,18 +84,19 @@ class MainWindow(QMainWindow):
         self.book_notebook_screen.back_btn.clicked.connect(lambda: self.go_back_retelling(id))
         self.book_notebook_screen.back_btn.blockSignals(False)
 
-        # self.book_notebook_screen.back_btn.clicked.connect(lambda: self.go_back_quotes(id))
-
+    # Обновляю краткий пересказ книги по ID
     def go_back_retelling(self, id):
-        print(type(self.book_notebook_screen.notebook.toPlainText()))
         self.c.execute(f"""UPDATE mylibrary SET brief_retelling = '{self.book_notebook_screen.notebook.toPlainText()}' WHERE ID = {id}""")
         self.db.commit()
+        self.switch_to_inf_screen()
     
+    # Переключение на экран рецензирования книги
     def switch_to_review(self, id):
         self.stacked_widget.setCurrentWidget(self.book_notebook_screen)
         text = self.c.execute(f"""SELECT * FROM mylibrary WHERE ID = {id}""")
         for i in text:
-            self.book_notebook_screen.notebook.setPlainText(i[7])
+            self.book_notebook_screen.notebook.setPlainText(i[7])  # 7 - это индекс рецензии
+        # Настройка кнопки "Назад"
         self.book_notebook_screen.back_btn.blockSignals(True)
         try:
             self.book_notebook_screen.back_btn.clicked.disconnect()
@@ -104,17 +105,17 @@ class MainWindow(QMainWindow):
         self.book_notebook_screen.back_btn.clicked.connect(lambda: self.go_back_review(id))
         self.book_notebook_screen.back_btn.blockSignals(False)
 
-        # self.book_notebook_screen.back_btn.clicked.connect(lambda: self.go_back_quotes(id))
-        
+    # Обновление рецензии книги по ID    
     def go_back_review(self, id):
-        print(type(self.book_notebook_screen.notebook.toPlainText()))
         self.c.execute(f"""UPDATE mylibrary SET review = '{self.book_notebook_screen.notebook.toPlainText()}' WHERE ID = {id}""")
         self.db.commit()
+        self.switch_to_inf_screen()
 
-
+    # Переключение на экран информации о книге
     def switch_to_inf_screen(self):
         self.stacked_widget.setCurrentWidget(self.book_inf_screen)
 
+    # Очистка и переключение на экран добавления книги
     def switch_to_book_add_screen(self):
         self.book_add_screen.title.clear()
         self.book_add_screen.author.clear()
@@ -122,6 +123,7 @@ class MainWindow(QMainWindow):
         self.book_add_screen.release_year.clear()
         self.stacked_widget.setCurrentWidget(self.book_add_screen)
 
+    # Переключение на экран со всеми книгами
     def switch_to_all_books(self):
         self.stacked_widget.setCurrentWidget(self.all_books)
         self.buttons = []
@@ -137,6 +139,10 @@ class MainWindow(QMainWindow):
         for i in books:
             button = QPushButton(self)
             button.setText(i[1])
+            # МОЖЕТ БАГАТЬСЯ ИЗ-ЗА ИНДЕКСАЦИИ К I
+            button.setProperty('genre', i[4])
+            button.setProperty('author', i[3])
+            button.setProperty('release_year', i[2])
             self.buttons.append(button)
             button.setFixedSize(400, 50)
             self.books_id.append(i[0])
@@ -148,8 +154,6 @@ class MainWindow(QMainWindow):
 
         self.all_books.layout().addWidget(scroll_area)
 
-    # def switch_to_book_add_screen_from_all(self):
-    #     self.stacked_widget.setCurrentWidget(self.book_add_screen)
         
     def switch_to_book_add_screen_from_all(self):
         self.book_add_screen.title.clear()
@@ -207,7 +211,7 @@ class MainWindow(QMainWindow):
             '{self.book_add_screen.release_year.toPlainText()}', '{self.book_add_screen.author.toPlainText()}',
             '{self.book_add_screen.genre.toPlainText()}')""")
             self.db.commit()
-            print('book was added')
+            print('книга была добавлена')
             self.stacked_widget.setCurrentWidget(self.book_add_screen)
         else:
             self.book_add_screen.res_label.setText('Введите название книги')
@@ -217,6 +221,14 @@ class MainWindow(QMainWindow):
         self.db.commit()
         self.switch_to_all_books()
     
+    def books_filter(self):
+        genre = self.filter_input_genre.text()
+        if genre:
+            books = self.c.execute("SELECT id, title, author, year, genre FROM mylibrary WHERE genre LIKE ?", (f"%{genre}%",)).fetchall()
+            self.display_books(books)
+        else:
+            self.load_books()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
