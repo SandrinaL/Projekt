@@ -13,12 +13,16 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">color: rgb(0, 0, 0);
+background-color: rgb(78, 78, 78);</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>50</y>
+      <x>50</x>
+      <y>60</y>
       <width>221</width>
       <height>71</height>
      </rect>
@@ -30,21 +34,21 @@
    <widget class="QPushButton" name="add_new_book">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>480</y>
+      <x>530</x>
+      <y>510</y>
       <width>171</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>ДОБАВИТЬ НОВУЮ КНИГУ</string>
+     <string>Добавить новую книгу</string>
     </property>
    </widget>
    <widget class="QScrollArea" name="scrollArea">
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>100</y>
+      <y>120</y>
       <width>451</width>
       <height>441</height>
      </rect>
@@ -63,25 +67,42 @@
      </property>
     </widget>
    </widget>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menu">
-    <property name="title">
+   <widget class="QPushButton" name="filter_btn">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>20</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
      <string>Фильтрация</string>
     </property>
-    <addaction name="action"/>
-    <addaction name="action_2"/>
-    <addaction name="action_3"/>
    </widget>
-   <addaction name="menu"/>
+   <widget class="QLineEdit" name="search_input">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>20</y>
+      <width>241</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="search_btn">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>20</y>
+      <width>101</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Поиск</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action">

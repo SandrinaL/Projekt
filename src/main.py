@@ -1,6 +1,7 @@
 import sys
 
-from PyQt6.QtWidgets import QApplication, QStackedWidget, QMainWindow, QWidget, QVBoxLayout, QPushButton
+from PyQt6.QtWidgets import QApplication, QStackedWidget, QMainWindow, QWidget, QVBoxLayout, QPushButton, QInputDialog, \
+    QTableWidgetItem
 from PyQt6.uic import loadUi
 import sqlite3
 
@@ -8,29 +9,24 @@ import sqlite3
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.db = sqlite3.connect('D:\\Project\\base.sqlite')
+        self.db = sqlite3.connect('base.sqlite')
         self.c = self.db.cursor()
         self.setFixedSize(800, 600)
-        
 
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
 
-        self.all_books = loadUi('D:\Project\data\\all_books.ui')
-        self.book_list_screen = loadUi('D:\Project\data\\book_list_screen.ui')
-        self.book_inf_screen = loadUi('D:\Project\data\\book_inf_screen.ui')
-        self.book_notebook_screen = loadUi('D:\Project\data\\book_notebook_screen.ui')
-        self.book_add_screen = loadUi('D:\Project\data\\book_add_screen.ui')
+        self.all_books = loadUi('data/all_books.ui')
+        self.book_list_screen = loadUi('data/book_list_screen.ui')
+        self.book_inf_screen = loadUi('data/book_inf_screen.ui')
+        self.book_notebook_screen = loadUi('data/book_notebook_screen.ui')
+        self.book_add_screen = loadUi('data/book_add_screen.ui')
 
         self.stacked_widget.addWidget(self.all_books)
         self.stacked_widget.addWidget(self.book_inf_screen)
         self.stacked_widget.addWidget(self.book_notebook_screen)
         self.stacked_widget.addWidget(self.book_list_screen)
         self.stacked_widget.addWidget(self.book_add_screen)
-
-        # self.book_inf_screen.book_quotes.clicked.connect(self.switch_to_notebook)
-        # self.book_inf_screen.book_retelling.clicked.connect(self.switch_to_notebook)
-        # self.book_inf_screen.book_review.clicked.connect(self.switch_to_notebook)
 
         self.book_notebook_screen.back_btn.clicked.connect(self.switch_to_inf_screen)
 
@@ -46,8 +42,11 @@ class MainWindow(QMainWindow):
 
         self.book_add_screen.book_add_btn.clicked.connect(self.switch_to_all_books)
 
-        self.switch_to_all_books()
+        self.all_books.filter_btn.clicked.connect(self.books_filter)
 
+        self.all_books.search_btn.clicked.connect(self.search)
+
+        self.switch_to_all_books()
 
     def switch_to_quotes(self, id):
         self.stacked_widget.setCurrentWidget(self.book_notebook_screen)
@@ -63,13 +62,11 @@ class MainWindow(QMainWindow):
         self.book_notebook_screen.back_btn.clicked.connect(lambda: self.go_back_quotes(id))
         self.book_notebook_screen.back_btn.blockSignals(False)
 
-
-  
     def go_back_quotes(self, id):
-        self.c.execute(f"""UPDATE mylibrary SET quotes = '{self.book_notebook_screen.notebook.toPlainText()}' WHERE ID = {id}""")
+        self.c.execute(
+            f"""UPDATE mylibrary SET quotes = '{self.book_notebook_screen.notebook.toPlainText()}' WHERE ID = {id}""")
         self.db.commit()
         self.switch_to_inf_screen()
-
 
     def switch_to_retelling(self, id):
         self.stacked_widget.setCurrentWidget(self.book_notebook_screen)
@@ -84,12 +81,13 @@ class MainWindow(QMainWindow):
         self.book_notebook_screen.back_btn.clicked.connect(lambda: self.go_back_retelling(id))
         self.book_notebook_screen.back_btn.blockSignals(False)
 
-    # Обновление краткого пересказа книги по ID
+    # Обновление краткий пересказ книги по ID
     def go_back_retelling(self, id):
-        self.c.execute(f"""UPDATE mylibrary SET brief_retelling = '{self.book_notebook_screen.notebook.toPlainText()}' WHERE ID = {id}""")
+        self.c.execute(
+            f"""UPDATE mylibrary SET brief_retelling = '{self.book_notebook_screen.notebook.toPlainText()}' WHERE ID = {id}""")
         self.db.commit()
         self.switch_to_inf_screen()
-    
+
     # Переключение на экран рецензирования книги
     def switch_to_review(self, id):
         self.stacked_widget.setCurrentWidget(self.book_notebook_screen)
@@ -107,7 +105,8 @@ class MainWindow(QMainWindow):
 
     # Обновление рецензии книги по ID    
     def go_back_review(self, id):
-        self.c.execute(f"""UPDATE mylibrary SET review = '{self.book_notebook_screen.notebook.toPlainText()}' WHERE ID = {id}""")
+        self.c.execute(
+            f"""UPDATE mylibrary SET review = '{self.book_notebook_screen.notebook.toPlainText()}' WHERE ID = {id}""")
         self.db.commit()
         self.switch_to_inf_screen()
 
@@ -133,16 +132,16 @@ class MainWindow(QMainWindow):
         button_widget = QWidget(self)
         button_layout = QVBoxLayout(button_widget)
         scroll_area = self.all_books.scrollArea
-        
-        button_layout.setSpacing(10) 
+
+        button_layout.setSpacing(10)
 
         for i in books:
             button = QPushButton(self)
             button.setText(i[1])
-            # МОЖЕТ БАГАТЬСЯ ИЗ-ЗА ИНДЕКСАЦИИ К I
             button.setProperty('genre', i[4])
             button.setProperty('author', i[3])
             button.setProperty('release_year', i[2])
+            button.setProperty('id', i[0])
             self.buttons.append(button)
             button.setFixedSize(400, 50)
             self.books_id.append(i[0])
@@ -154,7 +153,6 @@ class MainWindow(QMainWindow):
 
         self.all_books.layout().addWidget(scroll_area)
 
-        
     def switch_to_book_add_screen_from_all(self):
         self.book_add_screen.title.clear()
         self.book_add_screen.author.clear()
@@ -163,10 +161,13 @@ class MainWindow(QMainWindow):
         self.stacked_widget.setCurrentWidget(self.book_add_screen)
 
     def get_book_info(self, id):
-        books = self.c.execute("""SELECT ID, title, release_year, author,
-                               genre FROM mylibrary""")
-        id = self.buttons.index(self.sender())
-        book_info = list(books)[id]
+        id = self.sender().property('id')
+        books = self.c.execute(f"""SELECT ID, title, release_year, author,
+                               genre FROM mylibrary WHERE ID = {id}""")
+
+        print(type(id))
+        book_info = list(books)[0]
+        print(book_info)
 
         if book_info:
             id, title, release_year, author, genre = book_info
@@ -215,19 +216,81 @@ class MainWindow(QMainWindow):
             self.stacked_widget.setCurrentWidget(self.book_add_screen)
         else:
             self.book_add_screen.res_label.setText('Введите название книги')
-    
+
     def del_book(self, id):
         self.c.execute(f"""DELETE FROM mylibrary WHERE ID = {id}""")
         self.db.commit()
         self.switch_to_all_books()
-    
+
     def books_filter(self):
-        genre = self.filter_input_genre.text()
-        if genre:
-            books = self.c.execute("SELECT id, title, author, year, genre FROM mylibrary WHERE genre LIKE ?", (f"%{genre}%",)).fetchall()
-            self.display_books(books)
+        items = (
+        'роман', 'комедия', 'трагедия', 'басня', 'поэма', 'былина', 'баллада', 'миф', 'новелла', 'повесть', 'рассказ')
+
+        item, ok = QInputDialog.getItem(self, "select input dialog",
+                                        "list of genres", items, 0, False)
+
+        if ok and item:
+            self.all_books.scrollArea.widget().deleteLater()
+
+            books = self.c.execute(f"""SELECT ID, title, release_year, author, genre 
+                                    FROM mylibrary WHERE genre = ?""", (item,)).fetchall()
+
+            button_widget = QWidget(self)
+            button_layout = QVBoxLayout(button_widget)
+            scroll_area = self.all_books.scrollArea
+
+            button_layout.setSpacing(10)
+
+            for i in books:
+                button = QPushButton(self)
+                button.setText(i[1])
+                button.setProperty('genre', i[4])
+                button.setProperty('author', i[3])
+                button.setProperty('release_year', i[2])
+                button.setProperty('id', i[0])
+                button.setFixedSize(400, 50)
+                button.clicked.connect(self.get_book_info)
+                button_layout.addWidget(button)
+
+            button_widget.setLayout(button_layout)
+            scroll_area.setWidget(button_widget)
+            self.all_books.layout().addWidget(scroll_area)
+
+    def search(self):
+        search_text = self.all_books.search_input.text().strip()
+
+        if search_text:
+            self.all_books.scrollArea.widget().deleteLater()
+
+            books = self.c.execute(
+                """SELECT ID, title, release_year, author, genre 
+                FROM mylibrary 
+                WHERE title LIKE ? OR author LIKE ? OR genre LIKE ?""",
+                (f'%{search_text}%', f'%{search_text}%', f'%{search_text}%')
+            ).fetchall()
+
+            button_widget = QWidget(self)
+            button_layout = QVBoxLayout(button_widget)
+            scroll_area = self.all_books.scrollArea
+
+            button_layout.setSpacing(10)
+
+            for i in books:
+                button = QPushButton(self)
+                button.setText(i[1])
+                button.setProperty('genre', i[4])
+                button.setProperty('author', i[3])
+                button.setProperty('release_year', i[2])
+                button.setProperty('id', i[0])
+                button.setFixedSize(400, 50)
+                button.clicked.connect(self.get_book_info)
+                button_layout.addWidget(button)
+
+            button_widget.setLayout(button_layout)
+            scroll_area.setWidget(button_widget)
+            self.all_books.layout().addWidget(scroll_area)
         else:
-            self.load_books()
+            self.switch_to_all_books()
 
 
 if __name__ == '__main__':
